@@ -1,1 +1,159 @@
-[]
+[
+    {
+        "id": "8b5bedaa.a1b75",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "e561ee71.f481c",
+        "type": "mqtt-broker",
+        "name": "lora-gateway",
+        "broker": "192.168.102.100",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": false,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "21448a7d.ad7546",
+        "type": "mqtt-broker",
+        "name": "rak4260-smt50-1",
+        "broker": "mqtt.mydevices.com",
+        "port": "1883",
+        "clientid": "4aa0f0b0-8bcd-11eb-a2e4-b32ea624e442",
+        "usetls": false,
+        "compatmode": false,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "3e703ad8.22aad6",
+        "type": "mqtt in",
+        "z": "8b5bedaa.a1b75",
+        "name": "bastwan-stm50-1",
+        "topic": "application/5/device/2188258c3c526557/rx",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "e561ee71.f481c",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "275b617.907a29e"
+            ]
+        ]
+    },
+    {
+        "id": "8e20b38c.d9398",
+        "type": "debug",
+        "z": "8b5bedaa.a1b75",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "4b87419c.6eefa",
+        "type": "mqtt out",
+        "z": "8b5bedaa.a1b75",
+        "name": "mydevices-rak4260-smt50-1",
+        "topic": "v1/9cbe2490-bb0c-11ea-a67f-15e30d90bbf4/things/4aa0f0b0-8bcd-11eb-a2e4-b32ea624e442/data/json",
+        "qos": "",
+        "retain": "",
+        "broker": "21448a7d.ad7546",
+        "x": 450,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "2b434bc2.604554",
+        "type": "inject",
+        "z": "8b5bedaa.a1b75",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[\t  {\t    \"channel\": 7,\t    \"value\": 10,\t    \"type\": \"rel_hum\",\t    \"unit\": \"p\"\t  },\t  {\t    \"channel\": \"ASDF\",\t    \"value\": 4.2,\t    \"type\": \"batt\",\t    \"unit\": \"v\"\t  },\t  {\t    \"channel\": 2,\t    \"value\": 18.2,\t    \"type\": \"temp\",\t    \"unit\": \"c\"\t  }\t]\t",
+        "payloadType": "jsonata",
+        "x": 150,
+        "y": 400,
+        "wires": [
+            [
+                "4b87419c.6eefa"
+            ]
+        ]
+    },
+    {
+        "id": "275b617.907a29e",
+        "type": "json",
+        "z": "8b5bedaa.a1b75",
+        "name": "ToJson",
+        "property": "payload",
+        "action": "",
+        "pretty": true,
+        "x": 390,
+        "y": 160,
+        "wires": [
+            [
+                "785180a.3dffd8"
+            ]
+        ]
+    },
+    {
+        "id": "785180a.3dffd8",
+        "type": "template",
+        "z": "8b5bedaa.a1b75",
+        "name": "Chayenne Json",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "[{\n    \"channel\": \"soil-humdiity-{{payload.devEUI}}\",\n    \"value\": \"{{payload.object.humiditySensor.3}}\",\n    \"type\": \"rel_hum\",\n    \"unit\": \"p\"\n},\n{\n    \"channel\": \"vbatt-{{payload.devEUI}}-vbatt\",\n    \"value\": \"{{payload.object.analogInput.1}}\",\n    \"type\": \"batt\",\n    \"unit\": \"v\"\n},\n{\n    \"channel\":\"temp-{{payload.devEUI}}-temp\",\n    \"value\": \"{{payload.object.temperatureSensor.5}}\",\n    \"type\": \"temp\",\n    \"unit\": \"c\"\n}\n]",
+        "output": "json",
+        "x": 190,
+        "y": 340,
+        "wires": [
+            [
+                "8e20b38c.d9398",
+                "4b87419c.6eefa"
+            ]
+        ]
+    }
+]
