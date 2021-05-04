@@ -56,6 +56,20 @@
         "willPayload": ""
     },
     {
+        "id": "7b5d9aa7.ac9684",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "iot-data",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "https://us-west-2-1.aws.cloud2.influxdata.com",
+        "rejectUnauthorized": true
+    },
+    {
         "id": "3e703ad8.22aad6",
         "type": "mqtt in",
         "z": "8b5bedaa.a1b75",
@@ -170,13 +184,13 @@
         "name": "Terrasse",
         "topic": "sensors/lacrosse/28",
         "qos": "0",
-        "datatype": "auto",
+        "datatype": "json",
         "broker": "e561ee71.f481c",
-        "x": 150,
-        "y": 600,
+        "x": 80,
+        "y": 480,
         "wires": [
             [
-                "ccbbba90.51e628"
+                "83aeabf0.d69fa8"
             ]
         ]
     },
@@ -195,11 +209,11 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": true,
-        "x": 250,
-        "y": 740,
+        "x": 480,
+        "y": 520,
         "wires": [
             [
-                "2069011b.39441e"
+                "720a9589.3364cc"
             ]
         ]
     },
@@ -208,15 +222,16 @@
         "type": "debug",
         "z": "6ab661df.e78bf",
         "name": "",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "true",
+        "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 500,
-        "y": 780,
+        "x": 850,
+        "y": 540,
         "wires": []
     },
     {
@@ -226,10 +241,102 @@
         "name": "Room-01",
         "topic": "sensors/lacrosse/20",
         "qos": "0",
-        "datatype": "auto",
+        "datatype": "json",
         "broker": "e561ee71.f481c",
-        "x": 100,
-        "y": 820,
+        "x": 80,
+        "y": 560,
+        "wires": [
+            [
+                "ade5216c.453d"
+            ]
+        ]
+    },
+    {
+        "id": "8299f22c.88725",
+        "type": "influxdb out",
+        "z": "6ab661df.e78bf",
+        "influxdb": "7b5d9aa7.ac9684",
+        "name": "InfluxDB",
+        "measurement": "lacrosse",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "s",
+        "retentionPolicyV18Flux": "",
+        "org": "ok+influx@3do.de",
+        "bucket": "iot-data",
+        "x": 860,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "720a9589.3364cc",
+        "type": "template",
+        "z": "6ab661df.e78bf",
+        "name": "Influx Convert",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "[{\n    \"humidity\": {{payload.hum}},\n    \"temperature\": {{payload.temp}}\n},\n{\n    \"sensor\": \"{{payload.id}}\"\n}]\n",
+        "output": "json",
+        "x": 660,
+        "y": 520,
+        "wires": [
+            [
+                "8299f22c.88725",
+                "2069011b.39441e"
+            ]
+        ]
+    },
+    {
+        "id": "ade5216c.453d",
+        "type": "change",
+        "z": "6ab661df.e78bf",
+        "name": "ID=room01",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.id",
+                "pt": "msg",
+                "to": "room01",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 270,
+        "y": 560,
+        "wires": [
+            [
+                "ccbbba90.51e628"
+            ]
+        ]
+    },
+    {
+        "id": "83aeabf0.d69fa8",
+        "type": "change",
+        "z": "6ab661df.e78bf",
+        "name": "ID=terrace",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.id",
+                "pt": "msg",
+                "to": "terrace",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 270,
+        "y": 480,
         "wires": [
             [
                 "ccbbba90.51e628"
