@@ -7,10 +7,17 @@
         "info": ""
     },
     {
+        "id": "6ab661df.e78bf",
+        "type": "tab",
+        "label": "Technoline",
+        "disabled": false,
+        "info": ""
+    },
+    {
         "id": "e561ee71.f481c",
         "type": "mqtt-broker",
         "name": "lora-gateway",
-        "broker": "192.168.102.100",
+        "broker": "rapi.lan",
         "port": "1883",
         "clientid": "",
         "usetls": false,
@@ -153,6 +160,79 @@
             [
                 "8e20b38c.d9398",
                 "4b87419c.6eefa"
+            ]
+        ]
+    },
+    {
+        "id": "544229e8.f5f478",
+        "type": "mqtt in",
+        "z": "6ab661df.e78bf",
+        "name": "Terrasse",
+        "topic": "sensors/lacrosse/28",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "e561ee71.f481c",
+        "x": 150,
+        "y": 600,
+        "wires": [
+            [
+                "ccbbba90.51e628"
+            ]
+        ]
+    },
+    {
+        "id": "ccbbba90.51e628",
+        "type": "delay",
+        "z": "6ab661df.e78bf",
+        "name": "RateLimit",
+        "pauseType": "timed",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "60",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 250,
+        "y": 740,
+        "wires": [
+            [
+                "2069011b.39441e"
+            ]
+        ]
+    },
+    {
+        "id": "2069011b.39441e",
+        "type": "debug",
+        "z": "6ab661df.e78bf",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "eb561433.043108",
+        "type": "mqtt in",
+        "z": "6ab661df.e78bf",
+        "name": "Room-01",
+        "topic": "sensors/lacrosse/20",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "e561ee71.f481c",
+        "x": 100,
+        "y": 820,
+        "wires": [
+            [
+                "ccbbba90.51e628"
             ]
         ]
     }
