@@ -2,7 +2,7 @@
     {
         "id": "8b5bedaa.a1b75",
         "type": "tab",
-        "label": "Flow 1",
+        "label": "Soil Measurement",
         "disabled": false,
         "info": ""
     },
@@ -76,13 +76,15 @@
         "name": "bastwan-stm50-1",
         "topic": "application/5/device/2188258c3c526557/rx",
         "qos": "2",
-        "datatype": "auto",
+        "datatype": "json",
         "broker": "e561ee71.f481c",
         "x": 130,
         "y": 160,
         "wires": [
             [
-                "275b617.907a29e"
+                "785180a.3dffd8",
+                "5cd15c71.861214",
+                "9f51d946.0bc9b8"
             ]
         ]
     },
@@ -99,8 +101,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 400,
-        "y": 340,
+        "x": 590,
+        "y": 40,
         "wires": []
     },
     {
@@ -112,14 +114,15 @@
         "qos": "",
         "retain": "",
         "broker": "21448a7d.ad7546",
-        "x": 450,
-        "y": 400,
+        "x": 640,
+        "y": 200,
         "wires": []
     },
     {
         "id": "2b434bc2.604554",
         "type": "inject",
         "z": "8b5bedaa.a1b75",
+        "d": true,
         "name": "",
         "props": [
             {
@@ -133,27 +136,11 @@
         "topic": "",
         "payload": "[\t  {\t    \"channel\": 7,\t    \"value\": 10,\t    \"type\": \"rel_hum\",\t    \"unit\": \"p\"\t  },\t  {\t    \"channel\": \"ASDF\",\t    \"value\": 4.2,\t    \"type\": \"batt\",\t    \"unit\": \"v\"\t  },\t  {\t    \"channel\": 2,\t    \"value\": 18.2,\t    \"type\": \"temp\",\t    \"unit\": \"c\"\t  }\t]\t",
         "payloadType": "jsonata",
-        "x": 150,
-        "y": 400,
+        "x": 350,
+        "y": 280,
         "wires": [
             [
                 "4b87419c.6eefa"
-            ]
-        ]
-    },
-    {
-        "id": "275b617.907a29e",
-        "type": "json",
-        "z": "8b5bedaa.a1b75",
-        "name": "ToJson",
-        "property": "payload",
-        "action": "",
-        "pretty": true,
-        "x": 390,
-        "y": 160,
-        "wires": [
-            [
-                "785180a.3dffd8"
             ]
         ]
     },
@@ -168,11 +155,10 @@
         "syntax": "mustache",
         "template": "[{\n    \"channel\": \"soil-humdiity-{{payload.devEUI}}\",\n    \"value\": \"{{payload.object.humiditySensor.3}}\",\n    \"type\": \"rel_hum\",\n    \"unit\": \"p\"\n},\n{\n    \"channel\": \"vbatt-{{payload.devEUI}}-vbatt\",\n    \"value\": \"{{payload.object.analogInput.1}}\",\n    \"type\": \"batt\",\n    \"unit\": \"v\"\n},\n{\n    \"channel\":\"temp-{{payload.devEUI}}-temp\",\n    \"value\": \"{{payload.object.temperatureSensor.5}}\",\n    \"type\": \"temp\",\n    \"unit\": \"c\"\n}\n]",
         "output": "json",
-        "x": 190,
-        "y": 340,
+        "x": 340,
+        "y": 160,
         "wires": [
             [
-                "8e20b38c.d9398",
                 "4b87419c.6eefa"
             ]
         ]
@@ -222,7 +208,7 @@
         "type": "debug",
         "z": "6ab661df.e78bf",
         "name": "",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -340,6 +326,86 @@
         "wires": [
             [
                 "ccbbba90.51e628"
+            ]
+        ]
+    },
+    {
+        "id": "7e74aebb.30e9e",
+        "type": "influxdb out",
+        "z": "8b5bedaa.a1b75",
+        "influxdb": "7b5d9aa7.ac9684",
+        "name": "InfluxDB",
+        "measurement": "soil-moisture",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "s",
+        "retentionPolicyV18Flux": "",
+        "org": "ok+influx@3do.de",
+        "bucket": "iot-data",
+        "x": 580,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "5cd15c71.861214",
+        "type": "template",
+        "z": "8b5bedaa.a1b75",
+        "name": "Influx Convert",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "[{\n    \"humidity\": {{payload.object.humiditySensor.3}},\n    \"temperature\": {{payload.object.temperatureSensor.5}},\n    \"vbatt\":{{payload.object.analogInput.1}}\n},\n{\n    \"sensor\": \"{{payload.devEUI}}\"\n}]\n",
+        "output": "json",
+        "x": 340,
+        "y": 100,
+        "wires": [
+            [
+                "7e74aebb.30e9e",
+                "8e20b38c.d9398"
+            ]
+        ]
+    },
+    {
+        "id": "9f51d946.0bc9b8",
+        "type": "debug",
+        "z": "8b5bedaa.a1b75",
+        "d": true,
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 330,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "4a5099cd.d56b78",
+        "type": "inject",
+        "z": "8b5bedaa.a1b75",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"applicationID\":\"5\",\"applicationName\":\"RAK4260\",\"deviceName\":\"SMT50-01\",\"devEUI\":\"2188258c3c526557\",\"rxInfo\":[{\"gatewayID\":\"b827ebfffe07829a\",\"uplinkID\":\"b8b91796-f926-4c0e-a7c4-b160281a56a8\",\"name\":\"Ollis-RAK-DeveloperGW\",\"time\":\"2021-05-05T21:05:50.315308Z\",\"rssi\":-91,\"loRaSNR\":6.8,\"location\":{\"latitude\":50.07202,\"longitude\":8.23534,\"altitude\":155}}],\"txInfo\":{\"frequency\":868300000,\"dr\":5},\"adr\":false,\"fCnt\":6047,\"fPort\":2,\"data\":\"AQIBoANoLQVnAEs=\",\"object\":{\"analogInput\":{\"1\":4.16},\"humiditySensor\":{\"3\":22.5},\"temperatureSensor\":{\"5\":7.5}}}",
+        "payloadType": "json",
+        "x": 110,
+        "y": 60,
+        "wires": [
+            [
+                "5cd15c71.861214"
             ]
         ]
     }
